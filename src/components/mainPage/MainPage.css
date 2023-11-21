@@ -1,0 +1,42 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-size: cover; /* Cover the entire page */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  color: rgb(9, 9, 9); /* Adjust text color for better readability */
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  position: relative; /* Add position relative here */
+}
+
+/* Darken the background image for better text readability */
+.main-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5); /* Adjust the color and opacity to your liking */
+  z-index: -1;
+}
+
+/* Rest of your styles */
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5em;
+  background-color: rgba(255, 255, 255, 0.5); /* Adjust color and opacity as needed */
+  padding: 0.5em 1em;
+  border-radius: 5px; /* Optional, for rounded corners */
+}
+
+
+p {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
