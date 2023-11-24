@@ -23,6 +23,7 @@ const waypoints: google.maps.DirectionsWaypoint[] = [
   { location: { lat: 51.2105611, lng: -4.1224522 }, stopover: true },
   { location: { lat: 50.9848034, lng: -4.373541 }, stopover: true },
 ];
+const distanceTravelledMetres = 10000;
 
 const MapPage: React.FC<MapPageProps> = ({ google }) => {
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
@@ -35,6 +36,7 @@ const MapPage: React.FC<MapPageProps> = ({ google }) => {
         origin,
         destination,
         waypoints,
+        distanceTravelledMetres,
       });
     }
   }, [mapInstance, google, origin, destination]);

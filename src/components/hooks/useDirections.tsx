@@ -1,5 +1,6 @@
 // functions/useDirections.tsx
 import { GoogleAPI } from 'google-maps-react';
+import drawProgress from '../../utilities/drawProgress';
 
 interface UseDirectionsProps {
   google: GoogleAPI;
@@ -7,6 +8,7 @@ interface UseDirectionsProps {
   origin: google.maps.LatLngLiteral;
   destination: google.maps.LatLngLiteral;
   waypoints: google.maps.DirectionsWaypoint[];
+  distanceTravelledMetres: number;
 }
 
 const useDirections = async ({
@@ -15,6 +17,7 @@ const useDirections = async ({
   origin,
   destination,
   waypoints,
+  distanceTravelledMetres,
 }: UseDirectionsProps) => {
   if (!map) return;
 
@@ -35,6 +38,7 @@ const useDirections = async ({
     (response, status) => {
       if (status === 'OK') {
         directionsDisplay.setDirections(response);
+        drawProgress({ google, map, response, distanceTravelledMetres });
       } else {
         window.alert(`Directions request failed due to ${status}`);
       }
