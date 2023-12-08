@@ -4,9 +4,10 @@ import backgroundImage from './mainPageBackground.png';
 
 interface MainPageProps {
   onShowMap: () => void;
+  onShowCoordPages: () => void;
 }
 
-const MainPage: React.FC<MainPageProps> = ({ onShowMap }) => {
+const MainPage: React.FC<MainPageProps> = ({ onShowMap, onShowCoordPages }) => {
   const backgroundStyle = {
     backgroundImage: `url(${backgroundImage})`,
   };
@@ -15,6 +16,7 @@ const MainPage: React.FC<MainPageProps> = ({ onShowMap }) => {
       <h1>Welcome to path-tracker</h1>
       <p>Your journey to achieving your goals starts here!</p>
       <button onClick={onShowMap}>Show Map</button>
+      <button onClick={onShowCoordPages}>Show Coords Page</button>
     </div>
   );
 };

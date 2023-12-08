@@ -54,3 +54,32 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+/* Add this CSS to your stylesheet or component */
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align header and statistics vertically */
+  justify-content: space-between; /* Add space between header and statistics */
+  padding: 20px; /* Add some padding for spacing */
+}
+
+.header {
+  flex: 1; /* Allow header to grow to fill available space */
+}
+
+.statistics {
+  flex: 1; /* Allow statistics to grow to fill available space */
+  background-color: #f0f0f0; /* Add background color to statistics box */
+  padding: 10px; /* Add padding inside the statistics box */
+  border: 1px solid #ccc; /* Add a border around the statistics box */
+  border-radius: 5px; /* Add rounded corners to the statistics box */
+  text-align: left; /* Align text inside the statistics box to the left */
+}
+
+/* Style info-items inside the statistics box */
+.info-item {
+  margin-bottom: 10px; /* Add space between each info item */
+}
+
+/* You can adjust the styling further as needed */
