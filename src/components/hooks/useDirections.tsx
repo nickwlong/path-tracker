@@ -7,7 +7,7 @@ interface UseDirectionsProps {
   map: google.maps.Map | null;
   origin: google.maps.LatLngLiteral;
   destination: google.maps.LatLngLiteral;
-  waypoints: google.maps.DirectionsWaypoint[];
+  routes: google.maps.DirectionsWaypoint[][];
   distanceTravelledMetres: number;
   onDirectionsCalculated?: (response: google.maps.DirectionsResult) => void;
 }
@@ -17,7 +17,7 @@ const useDirections = async ({
   map,
   origin,
   destination,
-  waypoints,
+  routes,
   distanceTravelledMetres,
   onDirectionsCalculated,
 }: UseDirectionsProps) => {
@@ -29,7 +29,7 @@ const useDirections = async ({
   });
 
   directionsDisplay.setMap(map);
-
+  routes.forEach(async (waypoints) => {
   await directionsService.route(
     {
       origin: origin,
@@ -49,8 +49,10 @@ const useDirections = async ({
       } else {
         window.alert(`Directions request failed due to ${status}`);
       }
-    }
-  );
+    });
+});
+  
+  
 
   const addMarker = (location: google.maps.LatLngLiteral, label: string) => {
     new google.maps.Marker({

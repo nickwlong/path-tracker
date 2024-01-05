@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.coords-page-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.map-container {
+  flex: 1;
+  margin-right: 20px; /* Adjust the margin as needed */
+  min-width: 65%; /* Adjust the minimum width of the map container */
+}
+
+.table-container {
+  flex: 1;
+  min-width: 35%; /* Adjust the minimum width of the table container */
+}

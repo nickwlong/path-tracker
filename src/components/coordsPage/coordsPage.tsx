@@ -1,50 +1,82 @@
-import React, { useState } from 'react';
-import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import React, { Component } from 'react';
+import MapComponent from './MapComponent';
+import WaypointTable from './WayPointTable';
 
-interface Waypoint {
-  lat: number;
-  lng: number;
+interface CoordsPageState {
+  waypoints: { lat: number; lng: number }[];
+  exportArray: { location: { lat: number; lng: number }; stopover: boolean }[];
+  showExport: boolean;
 }
 
-interface AddWaypointsPageProps {
-  google: any; // You can replace 'any' with a more specific type if available
-}
-
-const AddWaypointsPage: React.FC<AddWaypointsPageProps> = ({ google }) => {
-  const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
-
-  const handleMapClick = (clickEvent: any) => {
-    const newWaypoint: Waypoint = {
-      lat: clickEvent.latLng.lat(),
-      lng: clickEvent.latLng.lng(),
+class CoordsPage extends Component<object, CoordsPageState> {
+  constructor(props: object) {
+    super(props);
+    this.state = {
+      waypoints: [],
+      exportArray: [],
+      showExport: false,
     };
-    setWaypoints([...waypoints, newWaypoint]);
+  }
+
+  addWaypoint = (lat: number, lng: number) => {
+    const newWaypoint = { lat, lng };
+    this.setState((prevState) => ({
+      waypoints: [...prevState.waypoints, newWaypoint],
+      showExport: true,
+    }));
   };
 
-  return (
-    <div>
-      <h1>Add Waypoints</h1>
-      <Map
-        google={google}
-        zoom={14}
-        onClick={handleMapClick}
-        style={{ width: '100%', height: '70vh' }}
-      />
-      {waypoints.map((waypoint, index) => (
-        <Marker
-          key={index}
-          position={waypoint}
-          label={`${index + 1}`} // Add labels to waypoints (1, 2, 3, ...)
-        />
-      ))}
-      <div>
-        <h2>Waypoints:</h2>
-        <pre>{JSON.stringify(waypoints, null, 2)}</pre>
-      </div>
-    </div>
-  );
-};
+  onDeleteWaypoint = (index: number) => {
+    const { waypoints } = this.state;
+    const updatedWaypoints = [...waypoints];
+    updatedWaypoints.splice(index, 1);
+    this.setState({ waypoints: updatedWaypoints });
+  };
 
-export default GoogleApiWrapper({
-  apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY!,
-})(AddWaypointsPage);
+  onClearWaypoints = () => {
+    this.setState({ waypoints: [], exportArray: [], showExport: false });
+  };
+
+  exportWaypoints = () => {
+    const { waypoints } = this.state;
+    const exportArray = waypoints.map((waypoint) => ({
+      location: { lat: waypoint.lat, lng: waypoint.lng },
+      stopover: true,
+    }));
+    this.setState({ exportArray });
+  };
+
+  copyToClipboard = () => {
+    const { exportArray } = this.state;
+    navigator.clipboard.writeText(JSON.stringify(exportArray, null, 2));
+  };
+
+  render() {
+    const { waypoints, exportArray, showExport } = this.state;
+
+    return (
+      <div className="coords-page-container">
+        <div className="map-container">
+          <MapComponent onMapClick={this.addWaypoint} />
+        </div>
+        <div className="table-container">
+          <WaypointTable waypoints={waypoints} onDeleteWaypoint={this.onDeleteWaypoint} />
+          {showExport && (
+            <div className="export-container">
+              <button onClick={this.exportWaypoints}>Export Waypoints</button>
+              {exportArray.length > 0 && (
+                <div className="exported-waypoints">
+                  <pre>{JSON.stringify(exportArray, null, 2)}</pre>
+                  <button onClick={this.copyToClipboard}>Copy to Clipboard</button>
+                </div>
+              )}
+              <button onClick={this.onClearWaypoints}>Clear Waypoints</button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default CoordsPage;

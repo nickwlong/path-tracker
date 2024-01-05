@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Map,
-  GoogleApiWrapper,
-  GoogleAPI,
-  mapEventHandler,
-} from 'google-maps-react';
+import { Map, GoogleApiWrapper, GoogleAPI, mapEventHandler } from 'google-maps-react';
 import useDirections from '../hooks/useDirections';
+import { routes } from './routeGenerator';
+import { waypoints } from './coords';
 
 interface MapPageProps {
   google: GoogleAPI;
@@ -15,48 +12,64 @@ const mapStyles = {
   width: '100%',
   height: '60vh',
 };
+const origin = {
+  lat: waypoints[0]?.location?.lat,
+  lng: waypoints[0]?.location?.lng,
+};
 
-const origin = { lat: 51.2136401, lng: -3.477535 };
-const destination = { lat: 50.0663289, lng: -5.7149219 };
-const waypoints: google.maps.DirectionsWaypoint[] = [
-  { location: { lat: 51.2105611, lng: -4.1224522 }, stopover: true },
-  { location: { lat: 51.000408, lng: -4.402532 }, stopover: true },
-  { location: { lat: 51.013046, lng: -4.4494 }, stopover: true },
-  { location: { lat: 51.019549, lng: -4.518929 }, stopover: true },
-  { location: { lat:  51.020912, lng:  -4.513367 }, stopover: true },
-];
-const distanceTravelledMetres = 150000;
+const destination = {
+  lat: waypoints[waypoints.length - 1]?.location?.lat,
+  lng: waypoints[waypoints.length - 1]?.location?.lng,
+};
+const distanceTravelledMetres = 10000;
+// TODO - Need to remove the routed distance from the total distanceTravelledMetres so that itis not always applied to individual routes
 
 const MapPage: React.FC<MapPageProps> = ({ google }) => {
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
-  const [totalRouteDistance, setTotalRouteDistance] = useState<number | null>(
-    null
-  );
+  const [totalRouteDistance, setTotalRouteDistance] = useState<number>(0); // Initialize with 0
 
   useEffect(() => {
     if (mapInstance) {
-      useDirections({
-        google,
-        map: mapInstance,
-        origin,
-        destination,
-        waypoints,
-        distanceTravelledMetres,
-        onDirectionsCalculated: (response) => {
-          const route = response.routes[0];
-          let totalDistance = 0;
+      // Use a helper variable to accumulate the total distance
+      let accumulatedDistance = 0;
 
-          for (const leg of route.legs) {
-            totalDistance += leg.distance?.value || 0;
-          }
+      // Loop through routes and calculate distances
+      routes.forEach((route) => {
+        const origin = {
+          lat: route[0]?.location?.lat,
+          lng: route[0]?.location?.lng,
+        };
+        console.log(route)
+        
+        const destination = {
+          lat: route[route.length - 1]?.location?.lat,
+          lng: route[route.length - 1]?.location?.lng,
+        };
+        useDirections({
+          google,
+          map: mapInstance,
+          origin,
+          destination,
+          routes: [route],
+          distanceTravelledMetres,
+          onDirectionsCalculated: (response) => {
+            const route = response.routes[0];
+            let totalDistance = 0;
 
-          setTotalRouteDistance(totalDistance / 1000); // Convert meters to kilometers
-        },
+            for (const leg of route.legs) {
+              totalDistance += leg.distance?.value || 0;
+            }
+
+            accumulatedDistance += totalDistance / 1000; // Convert meters to kilometers
+
+            setTotalRouteDistance(accumulatedDistance);
+          },
+        });
       });
     }
   }, [mapInstance, google, origin, destination]);
 
-  const totalRouteDistanceValue = totalRouteDistance || 1;
+  const totalRouteDistanceValue = totalRouteDistance || 0;
 
   const handleMapReady: mapEventHandler = (_mapProps, map) => {
     if (!map) return;
