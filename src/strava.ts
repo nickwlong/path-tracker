@@ -1,6 +1,5 @@
 import axios, { AxiosResponse, isAxiosError } from 'axios';
 import * as dotenv from 'dotenv';
-import { stringify } from 'querystring';
 
 // 1: Go to https://www.strava.com/oauth/authorize?client_id=95833&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=activity:read_all and click authorise various rights. to add more permissions, update the scope param!
 // 2: Once authorised, take the param 'code' from this and pass it in a request with client_id and client_secret to:
@@ -16,6 +15,7 @@ const getAccessToken = async () => {
   try {
     const url = `https://www.strava.com/api/v3/oauth/token?client_id=${process.env.STRAVA_CLIENT_ID}&client_secret=${process.env.STRAVA_CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${process.env.STRAVA_REFRESH_TOKEN}`;
     const response: AxiosResponse = await axios.post(url);
+    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       console.log(error.response?.data);
